@@ -290,6 +290,10 @@ class WebhookController extends \b8\Controller
         $payloadString = file_get_contents("php://input");
         $payload = json_decode($payloadString, true);
 
+        if ($payload['ref'] !== 'refs/heads/' + $project->getBranch()) {
+            return array('status' => 'ignored', 'message' => 'Push has to be made in branch "' . $project->getBranch() . '"');
+        }
+
         // build on merge request events
         if (isset($payload['object_kind']) && $payload['object_kind'] == 'merge_request') {
             $attributes = $payload['object_attributes'];
